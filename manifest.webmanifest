@@ -1,0 +1,9 @@
+{
+  "name": "康复训练计时器",
+  "short_name": "康复计时",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f3f6f4",
+  "theme_color": "#0b5d57",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

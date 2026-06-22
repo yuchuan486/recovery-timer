@@ -1,0 +1,34 @@
+:root { color-scheme: light; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f3f6f4; color: #17201e; }
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; }
+.app-shell { max-width: 680px; margin: 0 auto; min-height: 100vh; padding: calc(24px + env(safe-area-inset-top)) 18px calc(32px + env(safe-area-inset-bottom)); }
+header { margin-bottom: 22px; }
+.eyebrow { color: #0b5d57; font-weight: 700; margin: 0 0 6px; letter-spacing: .08em; font-size: .78rem; }
+h1 { font-size: clamp(1.8rem, 6vw, 2.5rem); margin: 0; letter-spacing: -.04em; }
+.subtitle { color: #54615d; line-height: 1.5; margin: 10px 0 0; }
+.notice { background: #e5f1ec; border-left: 4px solid #288574; padding: 12px 14px; border-radius: 8px; color: #26483f; line-height: 1.45; margin-bottom: 16px; font-size: .92rem; }
+.settings-list { display: grid; gap: 14px; }
+.exercise-card { background: white; border: 1px solid #dce5e1; border-radius: 16px; padding: 17px; box-shadow: 0 3px 12px rgba(23, 32, 30, .04); }
+.exercise-card h2 { font-size: 1.2rem; margin: 0 0 4px; }
+.exercise-card > p { margin: 0 0 15px; color: #62706b; font-size: .9rem; line-height: 1.4; }
+.field-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px; }
+.field { display: grid; gap: 5px; font-size: .84rem; color: #43504c; font-weight: 600; }
+.field.full { grid-column: 1 / -1; }
+input, select { width: 100%; min-height: 43px; border: 1px solid #bdcbc5; border-radius: 9px; padding: 7px 9px; color: #17201e; background: #fff; font: inherit; }
+input:focus, select:focus { outline: 3px solid #b6dfd4; border-color: #0b5d57; }
+button { font: inherit; font-weight: 700; border-radius: 10px; min-height: 50px; padding: 10px 16px; cursor: pointer; }
+.primary-button { width: 100%; margin-top: 20px; background: #0b5d57; color: white; border: 0; font-size: 1.05rem; }
+.text-button { display: block; background: none; border: 0; color: #49645d; margin: 10px auto 0; min-height: 38px; font-size: .88rem; }
+.hidden { display: none; }
+#workout-screen { text-align: center; padding-top: 18px; }
+.progress-wrap { height: 8px; background: #dbe7e2; border-radius: 99px; overflow: hidden; margin: 2px 0 28px; }
+.progress-bar { height: 100%; width: 0%; background: #0b5d57; transition: width .2s linear; }
+.phase-label { color: #0b5d57; font-size: .9rem; font-weight: 800; letter-spacing: .07em; margin: 0 0 14px; }
+#cue-text { font-size: clamp(2rem, 11vw, 4rem); line-height: 1.12; margin: 0 auto; max-width: 610px; letter-spacing: -.045em; }
+.detail-text { color: #596762; margin: 17px auto 0; min-height: 24px; line-height: 1.5; }
+.timer-text { font-variant-numeric: tabular-nums; font-size: clamp(3rem, 18vw, 6rem); color: #17201e; font-weight: 800; margin: 18px 0 30px; letter-spacing: -.06em; }
+.controls { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.secondary-button { background: white; color: #164b43; border: 1px solid #7bb3a6; }
+.danger-button { background: #fff4f2; color: #a32f22; border: 1px solid #e4a299; }
+.screen-note { color: #64716c; font-size: .85rem; line-height: 1.45; margin: 22px auto 0; max-width: 420px; }
+@media (max-width: 370px) { .field-grid { grid-template-columns: 1fr; } }

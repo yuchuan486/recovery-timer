@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0b5d57" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="康复计时" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icon.svg" type="image/svg+xml" />
+    <title>康复训练计时器</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header>
+        <p class="eyebrow">每日康复训练</p>
+        <h1>康复训练计时器</h1>
+        <p class="subtitle">节奏、组间休息和动作间休息都可单独调整。</p>
+      </header>
+      <section id="setup-screen" aria-label="训练设置">
+        <div class="notice">首次请确认节奏和次数与康复教练的要求一致。设置会保存在本机。</div>
+        <div id="exercise-settings" class="settings-list"></div>
+        <button id="start-button" class="primary-button">开始今天的训练</button>
+        <button id="reset-button" class="text-button">恢复推荐默认值</button>
+      </section>
+      <section id="workout-screen" class="hidden" aria-live="polite">
+        <div class="progress-wrap"><div id="progress-bar" class="progress-bar"></div></div>
+        <p id="phase-label" class="phase-label">准备开始</p>
+        <h2 id="cue-text">准备</h2>
+        <p id="detail-text" class="detail-text">点击开始后会有中文语音提示。</p>
+        <p id="timer-text" class="timer-text">00:00</p>
+        <div class="controls">
+          <button id="pause-button" class="secondary-button">暂停</button>
+          <button id="end-button" class="danger-button">结束训练</button>
+        </div>
+        <p class="screen-note">训练时请保持本页面在前台，并将手机音量调至可听见。</p>
+      </section>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>
