@@ -194,7 +194,7 @@ async function startWorkout() {
   readSettings();
   readPreferences();
   stopped = false; paused = false; completed = 0; totalSteps = countSteps(config);
-  await requestWakeLock();
+  requestWakeLock();
   setupScreen.classList.add("hidden"); workoutScreen.classList.remove("hidden");
   pauseButton.textContent = "暂停";
   show("准备", "准备开始", "10 秒后开始第一个动作", 10);
