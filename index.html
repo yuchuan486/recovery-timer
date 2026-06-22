@@ -22,6 +22,21 @@
       <section id="setup-screen" aria-label="训练设置">
         <div class="notice">首次请确认节奏和次数与康复教练的要求一致。设置会保存在本机。</div>
         <div id="exercise-settings" class="settings-list"></div>
+        <section class="preference-card" aria-label="语音和屏幕设置">
+          <h2>语音与屏幕</h2>
+          <div class="field-grid">
+            <label class="field">语音风格
+              <select id="voice-style"><option value="gentle">舒缓</option><option value="standard">标准</option><option value="clear">清晰</option></select>
+            </label>
+            <label class="field">语速
+              <select id="voice-rate"><option value="slow">慢</option><option value="normal">中</option><option value="fast">快</option></select>
+            </label>
+            <label class="field full">组前提示
+              <select id="set-announcement"><option value="full">动作名称和组数</option><option value="short">只提示组数</option></select>
+            </label>
+          </div>
+          <p class="settings-help">开始训练时会尝试保持屏幕常亮；旧版 Safari 不支持时，请把 iPhone 的“自动锁定”临时设为“永不”。</p>
+        </section>
         <button id="start-button" class="primary-button">开始今天的训练</button>
         <button id="reset-button" class="text-button">恢复推荐默认值</button>
       </section>

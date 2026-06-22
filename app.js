@@ -4,6 +4,10 @@ const DEFAULTS = [
   { id: "bridge", name: "背桥", help: "每组 6 次。", kind: "plain", reps: 6, sets: 8, interval: 5, setRest: 30, nextRest: 0 }
 ];
 
+const DEFAULT_PREFERENCES = { voiceStyle: "gentle", voiceRate: "slow", setAnnouncement: "full" };
+const VOICE_STYLES = { gentle: { pitch: 0.88 }, standard: { pitch: 1 }, clear: { pitch: 1.08 } };
+const VOICE_RATES = { slow: 0.84, normal: 0.96, fast: 1.1 };
+
 const $ = selector => document.querySelector(selector);
 const settingsEl = $("#exercise-settings");
 const setupScreen = $("#setup-screen");
@@ -16,6 +20,8 @@ const progressBar = $("#progress-bar");
 const pauseButton = $("#pause-button");
 
 let config = loadConfig();
+let preferences = loadPreferences();
+let wakeLock = null;
 let stopped = false;
 let paused = false;
 let completed = 0;
@@ -30,6 +36,25 @@ function loadConfig() {
 }
 
 function saveConfig() { localStorage.setItem("recoveryTimerConfig", JSON.stringify(config)); }
+function loadPreferences() {
+  try {
+    const saved = JSON.parse(localStorage.getItem("recoveryTimerPreferences"));
+    if (saved && typeof saved === "object") return { ...DEFAULT_PREFERENCES, ...saved };
+  } catch (_) {}
+  return { ...DEFAULT_PREFERENCES };
+}
+function savePreferences() { localStorage.setItem("recoveryTimerPreferences", JSON.stringify(preferences)); }
+function renderPreferences() {
+  $("#voice-style").value = preferences.voiceStyle;
+  $("#voice-rate").value = preferences.voiceRate;
+  $("#set-announcement").value = preferences.setAnnouncement;
+}
+function readPreferences() {
+  preferences.voiceStyle = $("#voice-style").value;
+  preferences.voiceRate = $("#voice-rate").value;
+  preferences.setAnnouncement = $("#set-announcement").value;
+  savePreferences();
+}
 function number(value, fallback) {
   const parsed = Number.parseInt(value, 10);
   return Number.isFinite(parsed) ? Math.max(0, parsed) : fallback;
@@ -62,9 +87,30 @@ function speak(text) {
   if (!("speechSynthesis" in window)) return;
   window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
+  const style = VOICE_STYLES[preferences.voiceStyle] || VOICE_STYLES.gentle;
   utterance.lang = "zh-CN";
-  utterance.rate = 0.96;
+  utterance.pitch = style.pitch;
+  utterance.rate = VOICE_RATES[preferences.voiceRate] || VOICE_RATES.slow;
   window.speechSynthesis.speak(utterance);
+}
+
+function setAnnouncement(item, setDetail) {
+  return preferences.setAnnouncement === "short" ? setDetail : `${item.name}，${setDetail}`;
+}
+
+async function requestWakeLock() {
+  if (!("wakeLock" in navigator) || stopped || paused) return false;
+  try {
+    wakeLock = await navigator.wakeLock.request("screen");
+    wakeLock.addEventListener("release", () => { wakeLock = null; });
+    return true;
+  } catch (_) { return false; }
+}
+
+async function releaseWakeLock() {
+  if (!wakeLock) return;
+  try { await wakeLock.release(); } catch (_) {}
+  wakeLock = null;
 }
 
 function show(phase, cue, detail, seconds = 0) {
@@ -90,7 +136,8 @@ async function wait(seconds) {
     if (pausedAt !== null) {
       end += Date.now() - pausedAt;
       pausedAt = null;
-    }    const remaining = Math.max(0, Math.ceil((end - Date.now()) / 1000));
+    }
+    const remaining = Math.max(0, Math.ceil((end - Date.now()) / 1000));
     timerText.textContent = formatTime(remaining);
     if (remaining <= 0) break;
     await shortWait(150);
@@ -127,7 +174,7 @@ function countSteps(items) {
 async function runExercise(item) {
   for (let set = 1; set <= item.sets && !stopped; set++) {
     const setDetail = `第 ${set} 组，共 ${item.sets} 组`;
-    speak(`${item.name}，${setDetail}`);
+    speak(setAnnouncement(item, setDetail));
     if (item.kind === "alternate") {
       for (let rep = 1; rep <= item.reps && !stopped; rep++) {
         await cue(`左 ${rep}`, `${item.name} · ${setDetail}`, item.interval);
@@ -145,7 +192,9 @@ async function runExercise(item) {
 
 async function startWorkout() {
   readSettings();
+  readPreferences();
   stopped = false; paused = false; completed = 0; totalSteps = countSteps(config);
+  await requestWakeLock();
   setupScreen.classList.add("hidden"); workoutScreen.classList.remove("hidden");
   pauseButton.textContent = "暂停";
   show("准备", "准备开始", "10 秒后开始第一个动作", 10);
@@ -158,6 +207,7 @@ async function startWorkout() {
   if (!stopped) {
     completed = totalSteps; show("完成", "今天的训练完成", "做得好。", 0); speak("今天的训练完成");
     pauseButton.classList.add("hidden");
+    await releaseWakeLock();
   }
 }
 
@@ -166,11 +216,16 @@ $("#reset-button").addEventListener("click", () => { config = structuredClone(DE
 pauseButton.addEventListener("click", () => {
   paused = !paused;
   pauseButton.textContent = paused ? "继续" : "暂停";
-  if (paused) window.speechSynthesis?.pause(); else window.speechSynthesis?.resume();
+  if (paused) { window.speechSynthesis?.pause(); releaseWakeLock(); } else { window.speechSynthesis?.resume(); requestWakeLock(); }
 });
 $("#end-button").addEventListener("click", () => {
-  stopped = true; paused = false; window.speechSynthesis?.cancel();
+  stopped = true; paused = false; window.speechSynthesis?.cancel(); releaseWakeLock();
   workoutScreen.classList.add("hidden"); setupScreen.classList.remove("hidden"); pauseButton.classList.remove("hidden");
 });
 if ("serviceWorker" in navigator) window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js"));
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible" && !stopped && !paused) requestWakeLock();
+});
+["#voice-style", "#voice-rate", "#set-announcement"].forEach(selector => $(selector).addEventListener("change", readPreferences));
 renderSettings();
+renderPreferences();

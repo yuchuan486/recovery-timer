@@ -32,3 +32,7 @@ button { font: inherit; font-weight: 700; border-radius: 10px; min-height: 50px;
 .danger-button { background: #fff4f2; color: #a32f22; border: 1px solid #e4a299; }
 .screen-note { color: #64716c; font-size: .85rem; line-height: 1.45; margin: 22px auto 0; max-width: 420px; }
 @media (max-width: 370px) { .field-grid { grid-template-columns: 1fr; } }
+
+.preference-card { background: #fff; border: 1px solid #dce5e1; border-radius: 16px; padding: 17px; margin-top: 14px; box-shadow: 0 3px 12px rgba(23, 32, 30, .04); }
+.preference-card h2 { font-size: 1.1rem; margin: 0 0 14px; }
+.settings-help { color: #62706b; font-size: .84rem; line-height: 1.45; margin: 14px 0 0; }
