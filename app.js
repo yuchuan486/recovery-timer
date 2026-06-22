@@ -124,9 +124,10 @@ function show(phase, cue, detail, seconds = 0) {
 function formatTime(seconds) { return `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`; }
 function shortWait(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
-async function wait(seconds) {
+async function wait(seconds, announceLastFive = false) {
   let end = Date.now() + seconds * 1000;
   let pausedAt = null;
+  let lastCountdown = null;
   while (!stopped) {
     if (paused) {
       pausedAt ??= Date.now();
@@ -139,6 +140,10 @@ async function wait(seconds) {
     }
     const remaining = Math.max(0, Math.ceil((end - Date.now()) / 1000));
     timerText.textContent = formatTime(remaining);
+    if (announceLastFive && remaining > 0 && remaining <= 5 && remaining !== lastCountdown) {
+      lastCountdown = remaining;
+      speak(String(remaining));
+    }
     if (remaining <= 0) break;
     await shortWait(150);
   }
@@ -152,11 +157,11 @@ async function cue(text, detail, interval) {
   completed += 1;
 }
 
-async function rest(seconds, label) {
+async function rest(seconds, label, announceLastFive = false) {
   if (!seconds || stopped) return;
   show("休息", label, `${seconds} 秒后自动继续`, seconds);
   speak(label);
-  await wait(seconds);
+  await wait(seconds, announceLastFive);
   completed += 1;
 }
 
@@ -186,7 +191,7 @@ async function runExercise(item) {
     } else {
       for (let rep = 1; rep <= item.reps && !stopped; rep++) await cue(`第 ${rep} 次`, `${item.name} · ${setDetail}`, item.interval);
     }
-    if (set < item.sets) await rest(item.setRest, `第 ${set} 组完成，组间休息`);
+    if (set < item.sets) await rest(item.setRest, `第 ${set} 组完成，组间休息`, true);
   }
 }
 
